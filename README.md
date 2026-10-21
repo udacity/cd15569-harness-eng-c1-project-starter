@@ -72,6 +72,10 @@ onboarding_agent/
   env.py                              Loads .env
   __main__.py                         The command line: run and status
 tools/check_citations.py            Checks every file:line citation in a document
+tests/
+  smoke/test_task_0.py ... _5.py      A smoke test for your setup and for each task
+  fakes.py                            The scripted model the smoke tests run on
+  scripted_cli.py                     The command line with that model, for Task 5's test
 ```
 
 ## Setup
@@ -82,7 +86,7 @@ tools/check_citations.py            Checks every file:line citation in a documen
 - Git
 - A Udacity-issued Vocareum API key
 
-### Getting started
+### Getting started (TODO 0)
 
 1. Clone this repo and the service **side by side**, with the service at its
    tag. The harness finds the service as `../webhook-delivery`, next to this
@@ -119,6 +123,15 @@ tools/check_citations.py            Checks every file:line citation in a documen
 
    Then set `OPENAI_API_KEY` in `.env`.
 
+4. Check your setup. The first command checks Python, the install, your PATH,
+   the service and your key. The second makes one small call to the model, to
+   show the key works.
+
+   ```bash
+   python -m pytest tests/smoke/test_task_0.py
+   python -m pytest tests/smoke/test_task_0.py -m live
+   ```
+
 ## Project tasks
 
 Work through the tasks in order. Each TODO's comment says what to build and
@@ -127,7 +140,15 @@ back, and what is raised. Read the provided modules too. The code you write
 calls them, and the exceptions and helpers you need are already defined.
 
 The agent can't run until all five tasks are done, because the command line
-needs every part of the harness.
+needs every part of the harness. Each task has a smoke test instead, which
+you can run as soon as that task is done. The smoke tests need no key and
+cost nothing: where a model is needed, a scripted one stands in. Anything a
+later task builds is replaced by a stand-in too, so a task's test passes once
+that task and the ones before it are done.
+
+A smoke test checks the main behaviour of each TODO, not every case. Passing it
+means you can move on, not that the task is finished. When one fails, its
+message says what to look at.
 
 ### Task 1: The agent loop and the tool contract (TODO 1.1-1.3)
 
@@ -137,6 +158,10 @@ stop a run in code. A tool that fails comes back to the model as an error it
 can read, until too many fail in a row. Every tool's output is capped, and a
 result that was cut short says so.
 
+```bash
+python -m pytest tests/smoke/test_task_1.py
+```
+
 ### Task 2: The file and shell tools (TODO 2.1-2.4)
 
 Implement `file_read`, `file_write`, `file_edit` and `shell_exec`. `file_read`
@@ -145,6 +170,10 @@ numbers every line, so whatever the model quotes it can cite as `path:LINE`.
 whenever an edit would change nothing. `shell_exec` runs commands in the
 service's folder and refuses any that name a path outside it.
 
+```bash
+python -m pytest tests/smoke/test_task_2.py
+```
+
 ### Task 3: The search tool's interface (TODO 3.1-3.6)
 
 The file walk and the matcher are provided. You build the interface the model
@@ -152,6 +181,10 @@ sees: three output modes, a match cap and a byte cap that say what they left
 out, an explicit result when nothing matches, a frame that marks file content
 as untrusted, and a description that states the tool's own limits. Write the
 description last.
+
+```bash
+python -m pytest tests/smoke/test_task_3.py
+```
 
 ### Task 4: State that survives the process (TODO 4.1-4.8)
 
@@ -162,6 +195,10 @@ atomically. Then build the runner, which does exactly one task per session,
 checkpoints the run folder with git, and recovers from the last checkpoint
 when the progress file is corrupt.
 
+```bash
+python -m pytest tests/smoke/test_task_4.py
+```
+
 ### Task 5: The configuration (TODO 5.1-5.6)
 
 Write `config/agent.yaml`: the model, the limits, the tools the agent may use,
@@ -171,6 +208,17 @@ only if the harness doesn't already enforce it in code. Then make the
 registry build only the tools on the allow-list, and turn a tool name the
 model made up into an error it can act on. Be ready to say why each line of
 the config is there.
+
+```bash
+python -m pytest tests/smoke/test_task_5.py
+```
+
+Task 5's smoke test checks only that each section of the config is set and
+that it loads, because what goes in it is your decision. Then it runs the
+whole harness the way you will: three sessions as three separate commands,
+with your config, a scripted model in place of the real one, and a small
+made-up service in place of `webhook-delivery`. Get it passing before your
+first real run.
 
 ## Running the agent
 
