@@ -1,0 +1,21 @@
+# Harness configuration: the model, the limits, the tools, the system prompt rules, and
+# where the workspace is. Paths are relative to this file.
+
+# TODO 5.1: Set the model: gpt-5.4-mini, through the Vocareum endpoint, with an
+# output limit high enough to leave room for its reasoning.
+
+# TODO 5.2: Set the limits the loop enforces: the turn cap, the token budget, the
+# retry cap on consecutive tool failures, and the byte cap on tool output.
+
+# TODO 5.3: List the tools the agent may use. A tool missing from this list is
+# never offered to the model.
+
+# TODO 5.4: Write the system prompt's rules: a short list, each one a behaviour the
+# tasks need that the harness does not already enforce in code.
+
+workspace:
+  # The webhook-delivery checkout the agent maps, cloned beside this repo. For a checkout
+  # somewhere else, set ONBOARDING_FIXTURE=/path/to/webhook-delivery instead.
+  root: ../../webhook-delivery
+  # Each run gets its own runs/<tasks>_<YYYYMMDD_HHMMSS>/ folder here.
+  runs_dir: ../runs

@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.DS_Store
+
+# Run-scoped output: ONBOARDING.md, task list, progress file, event logs.
+# Every run is runs/<tasks>_<YYYYMMDD_HHMMSS>/ and stays local.
+runs/*

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "task-1",
+    "title": "Map the architecture",
+    "prompt": "Map this service so a new engineer can navigate it.\n\nRead every module. For each one, state what it is responsible for and how it connects to the others. Separately, enumerate the admin CLI's actual command surface by reading the code that registers the commands - not by reading a docstring or the README.\n\nWrite your findings to architecture.md as you go: after reading each module, append that module's entry with file_write and append=true, rather than holding everything in your head and writing one document at the end.\n\nCitation rule, which applies to every claim you make: cite the source file and line as `path/to/file.py:LINE`, where the path is a file belonging to this service. Never cite architecture.md, discrepancies.md, or any other file you have written yourself - a citation that points at your own notes is not evidence.\n\nFinish with a short summary of the service's shape.",
+    "expects": [
+      "architecture.md"
+    ]
+  },
+  {
+    "id": "task-2",
+    "title": "Verify the documentation against the code",
+    "prompt": "The README and the module docstrings make specific, checkable claims about how this service behaves. Your job is to find out which of them are false.\n\nHOW TO WORK. Take one claim at a time. Read the code that implements that claim, decide whether it holds, and then - before moving to the next claim - append your verdict to discrepancies.md with file_write and append=true. Do not gather everything first and write at the end: by then the file you read six steps ago is a memory, and the detail you need is the detail you will have lost. One claim, one read, one append.\n\nDo not decide by searching for the claim's wording. The absence of a phrase proves nothing, and its presence proves nothing either.\n\nCover these four areas, in this order:\n\n1. NUMBERS AND SEQUENCES. Every number, interval or sequence stated as fact in prose. Find the code that produces it and work out the actual values term by term. Write both sequences down and compare them element by element. Check every term, not just the first one or two.\n\n2. CONFIGURATION. Every setting the config module defines, feature flags included. For each, search the whole codebase for anything that reads it. For a flag, follow it to the branch that tests it and then into the code that branch runs, and say what actually happens when the flag is on. A setting that is defined, documented and read by nothing is a real defect - changing it does nothing, and the code it supposedly controls is using some other value. When you find one, find the value actually in use and its line.\n\n3. CLAIMS OF REMOVAL. Anything the docs describe as removed, migrated away from, deprecated, or no longer used. Search for the name and report every place it is still defined, imported or called. If two code paths are described as interchangeable, read both and say whether they really do the same thing.\n\n4. THE TESTS. Run the suite and report the pass and skip counts. For every skipped test: its file and line, how it is skipped, whether a reason is recorded, and - by reading the test body - what would happen if it ran. If re-enabling a test would change the result of the suite, say so and say why.\n\nEach entry in discrepancies.md needs: the claim and its `file:line`, the contradicting code and its `file:line`, and what the code actually does, naming the real value. Cite this service's files only - never your own notes.\n\nFinish by listing what you found, most serious first.",
+    "expects": [
+      "discrepancies.md"
+    ]
+  },
+  {
+    "id": "task-3",
+    "title": "Assemble ONBOARDING.md",
+    "prompt": "Write ONBOARDING.md, the document a new engineer reads on their first day with this service.\n\nStart by reading architecture.md and discrepancies.md, which earlier sessions produced.\n\nInclude:\n1. What the service does, in a paragraph.\n2. An architecture section covering the queue, delivery, rate limiting and the dead-letter path, plus the admin CLI's real command surface.\n3. A section titled 'Where the documentation is wrong'. Restate every discrepancy from discrepancies.md - all of them, not a selection. For each: what the docs claim, what the code does, and the `file:line` for both. Name the actual numbers and the actual values on both sides. 'The values differ' is not a finding; give the documented value and the real one, each with its line.\n4. A concrete proposed fix for at least one of the problems: which file, which change, and why that change is correct.\n\nCitations must point at this service's own files. Copy them across from architecture.md and discrepancies.md, but never cite architecture.md or discrepancies.md themselves - by the time someone reads ONBOARDING.md those files are gone, and a citation that points at them is worthless.\n\nBefore you finish, re-read what you have written and check that each `file:line` you copied is one you actually saw.",
+    "expects": [
+      "ONBOARDING.md"
+    ]
+  }
+]
