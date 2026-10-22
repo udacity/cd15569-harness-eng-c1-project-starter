@@ -72,6 +72,7 @@ onboarding_agent/
   env.py                              Loads .env
   __main__.py                         The command line: run and status
 tools/check_citations.py            Checks every file:line citation in a document
+tools/prepare_submission.py         Writes submission/, what you hand in, from a finished run
 tests/
   smoke/test_task_0.py ... _5.py      A smoke test for your setup and for each task
   fakes.py                            The scripted model the smoke tests run on
@@ -244,7 +245,7 @@ git -C ../webhook-delivery clean -fd
 
 ## Before you submit
 
-Check every citation in the document against the service:
+While you iterate, check every citation in the document against the service:
 
 ```bash
 python tools/check_citations.py runs/<run>/ONBOARDING.md --fixture ../webhook-delivery
@@ -258,6 +259,23 @@ yourself.
 **`ONBOARDING.md` must be exactly what the agent wrote.** It is graded as
 evidence of your harness, so never edit it by hand. To improve it, change the
 harness or the configuration and run the three sessions again.
+
+When the run is the one you want graded, write the submission folder from it:
+
+```bash
+python tools/prepare_submission.py runs/<run> --fixture ../webhook-delivery
+```
+
+It copies `ONBOARDING.md`, `architecture.md` and `discrepancies.md` into
+`submission/`, and writes `submission/RUN.md`, a record of the run: the
+SHA-256 of `ONBOARDING.md`, the checkpoint log, the tasks and the sessions,
+and the citation check, run again. Your reviewer reads `RUN.md` instead of
+running anything, so don't edit anything in `submission/`. The script refuses
+if `ONBOARDING.md` differs from the version the run last committed. Anything
+else, such as a failed session, it records as it is: read `RUN.md` before you
+submit.
+
+Submit `submission/` together with your code and `config/agent.yaml`.
 
 ## License
 
