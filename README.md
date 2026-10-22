@@ -74,9 +74,10 @@ onboarding_agent/
 tools/check_citations.py            Checks every file:line citation in a document
 tools/prepare_submission.py         Writes submission/, what you hand in, from a finished run
 tests/
-  smoke/test_task_0.py ... _5.py      A smoke test for your setup and for each task
-  fakes.py                            The scripted model the smoke tests run on
-  scripted_cli.py                     The command line with that model, for Task 5's test
+  smoke/test_task_0.py                The check for your setup
+  smoke/test_preflight.py             The whole harness, offline, before your first real run
+  fakes.py                            The scripted model the pre-flight runs on
+  scripted_cli.py                     The command line with that model, for the pre-flight
 ```
 
 ## Setup
@@ -141,15 +142,10 @@ back, and what is raised. Read the provided modules too. The code you write
 calls them, and the exceptions and helpers you need are already defined.
 
 The agent can't run until all five tasks are done, because the command line
-needs every part of the harness. Each task has a smoke test instead, which
-you can run as soon as that task is done. The smoke tests need no key and
-cost nothing: where a model is needed, a scripted one stands in. Anything a
-later task builds is replaced by a stand-in too, so a task's test passes once
-that task and the ones before it are done.
-
-A smoke test checks the main behaviour of each TODO, not every case. Passing it
-means you can move on, not that the task is finished. When one fails, its
-message says what to look at.
+needs every part of the harness. There is no test per task: the TODO comments
+and docstrings are the spec. When all five are done, the pre-flight under
+"Before your first run" runs the whole harness offline, to show the pieces fit
+before you spend anything on a real run.
 
 ### Task 1: The agent loop and the tool contract (TODO 1.1-1.3)
 
@@ -159,10 +155,6 @@ stop a run in code. A tool that fails comes back to the model as an error it
 can read, until too many fail in a row. Every tool's output is capped, and a
 result that was cut short says so.
 
-```bash
-python -m pytest tests/smoke/test_task_1.py
-```
-
 ### Task 2: The file and shell tools (TODO 2.1-2.4)
 
 Implement `file_read`, `file_write`, `file_edit` and `shell_exec`. `file_read`
@@ -170,10 +162,6 @@ numbers every line, so whatever the model quotes it can cite as `path:LINE`.
 `file_write` never replaces a file unless asked. `file_edit` fails loudly
 whenever an edit would change nothing. `shell_exec` runs commands in the
 service's folder and refuses any that name a path outside it.
-
-```bash
-python -m pytest tests/smoke/test_task_2.py
-```
 
 ### Task 3: The search tool's interface (TODO 3.1-3.6)
 
@@ -183,10 +171,6 @@ out, an explicit result when nothing matches, a frame that marks file content
 as untrusted, and a description that states the tool's own limits. Write the
 description last.
 
-```bash
-python -m pytest tests/smoke/test_task_3.py
-```
-
 ### Task 4: State that survives the process (TODO 4.1-4.8)
 
 Implement the task list and the progress file, the only things a new session
@@ -195,10 +179,6 @@ progress file is checked before it is trusted. Every state file is written
 atomically. Then build the runner, which does exactly one task per session,
 checkpoints the run folder with git, and recovers from the last checkpoint
 when the progress file is corrupt.
-
-```bash
-python -m pytest tests/smoke/test_task_4.py
-```
 
 ### Task 5: The configuration (TODO 5.1-5.6)
 
@@ -210,16 +190,20 @@ registry build only the tools on the allow-list, and turn a tool name the
 model made up into an error it can act on. Be ready to say why each line of
 the config is there.
 
+## Before your first run
+
+When all five tasks are done, run the pre-flight:
+
 ```bash
-python -m pytest tests/smoke/test_task_5.py
+python -m pytest tests/smoke/test_preflight.py
 ```
 
-Task 5's smoke test checks only that each section of the config is set and
-that it loads, because what goes in it is your decision. Then it runs the
-whole harness the way you will: three sessions as three separate commands,
-with your config, a scripted model in place of the real one, and a small
-made-up service in place of `webhook-delivery`. Get it passing before your
-first real run.
+It runs the whole harness the way you will: three sessions as three separate
+commands, with your config, a scripted model in place of the real one, and a
+small made-up service in place of `webhook-delivery`. It needs no key and costs
+nothing. It checks that each session finishes its task and hands over to the
+next, not that every TODO is right. When a session fails, the test shows its
+output. Get it passing before your first real run.
 
 ## Running the agent
 
