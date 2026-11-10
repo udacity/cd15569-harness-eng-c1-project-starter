@@ -33,22 +33,22 @@ def _path_tokens(command: str) -> list[str]:
 
 class ShellExec:
     name = "shell_exec"
-    description = (
-        "Run a shell command inside the service being examined, which is the working "
-        "directory. Use it to run the test suite and to inspect the tree. Returns combined "
-        f"stdout and stderr, capped at {DEFAULT_MAX_BYTES} bytes with an explicit truncation "
-        f"marker. Commands are killed after {DEFAULT_TIMEOUT:.0f}s by default.\n"
-        "\n"
-        "Do not use it to create or change files. The service is read-only, and anything a "
-        "command writes lands inside it. Write your own files with file_write.\n"
-        "\n"
-        "It cannot see files you have written: those live outside the service tree, and "
-        "`ls` will not show them. Read them with file_read by bare name instead."
-    )
 
     def __init__(self, workspace: Workspace, max_bytes: int = DEFAULT_MAX_BYTES) -> None:
         self._ws = workspace
         self._max_bytes = max_bytes
+        self.description = (
+            "Run a shell command inside the service being examined, which is the working "
+            "directory. Use it to run the test suite and to inspect the tree. Returns combined "
+            f"stdout and stderr, capped at {self._max_bytes} bytes with an explicit truncation "
+            f"marker. Commands are killed after {DEFAULT_TIMEOUT:.0f}s by default.\n"
+            "\n"
+            "Do not use it to create or change files. The service is read-only, and anything a "
+            "command writes lands inside it. Write your own files with file_write.\n"
+            "\n"
+            "It cannot see files you have written: those live outside the service tree, and "
+            "`ls` will not show them. Read them with file_read by bare name instead."
+        )
 
     def parameters(self) -> dict[str, Any]:
         return {
